@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Panel - FedEx-livetracking.number</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+        body { 
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 30px rgba(0,0,0,0.08);
+            padding: 35px 40px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 2px solid #e8e8e8;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .admin-header h1 {
+            font-size: 26px;
+            color: #003399;
+        }
+        .admin-header h1 span { color: #ff6600; }
+        .admin-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .admin-header .user-badge {
+            background: #e6f0ff;
+            color: #003399;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .admin-header .logout-btn {
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-header .logout-btn:hover {
+            background: #990000;
+        }
+        .admin-header .back-link {
+            color: #003399;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: 2px solid #003399;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .admin-header .back-link:hover {
+            background: #003399;
+            color: #fff;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #f8f9fc;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 1px solid #e8e8e8;
+        }
+        .stat-card .num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #003399;
+        }
+        .stat-card .label {
+            color: #888;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th {
+            text-align: left;
+            padding: 14px 14px;
+            background: #f8f9fc;
+            color: #555;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef0f2;
+            vertical-align: middle;
+        }
+        td input, td select {
+            background: #fafbfc;
+            border: 1px solid #d0d5dd;
+            color: #1a1a2e;
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 100%;
+            min-width: 100px;
+            max-width: 160px;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+        td input:focus, td select:focus {
+            border-color: #003399;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 51, 153, 0.08);
+        }
+        td select option { background: #fff; }
+
+        .btn-save {
+            background: #003399;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+        .btn-save:hover { background: #002277; }
+        .btn-save:disabled { background: #99a9c9; cursor: not-allowed; }
+        .btn-delete {
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 13px;
+            margin-left: 4px;
+        }
+        .btn-delete:hover { background: #990000; }
+
+        .gen-section {
+            margin-top: 25px;
+            background: #f8f9fc;
+            padding: 20px 25px;
+            border-radius: 10px;
+            border: 1px solid #e8e8e8;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .gen-section label {
+            font-weight: 700;
+            color: #333;
+            font-size: 14px;
+        }
+        .gen-section input {
+            background: #fff;
+            border: 1px solid #d0d5dd;
+            padding: 8px 14px;
+            border-radius: 6px;
+            flex: 1;
+            min-width: 120px;
+            font-size: 14px;
+        }
+        .gen-section input:focus {
+            border-color: #003399;
+            outline: none;
+        }
+        .btn-gen {
+            background: #006644;
+            color: #fff;
+            border: none;
+            padding: 9px 28px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-gen:hover { background: #004d33; }
+        .btn-gen:disabled { background: #99a9c9; cursor: not-allowed; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.4s ease;
+            display: none;
+            z-index: 999;
+            max-width: 90vw;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .expanded-fields {
+            background: #f8f9fc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .expanded-fields input {
+            background: #fff;
+            border: 1px solid #d0d5dd;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            flex: 1;
+            min-width: 100px;
+        }
+        .expanded-fields label {
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .loading-row td {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+        }
+
+        @media (max-width: 700px) {
+            .admin-container { padding: 20px; }
+            td input, td select { min-width: 70px; max-width: 100px; font-size: 12px; }
+            .gen-section { flex-direction: column; align-items: stretch; }
+            .admin-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <div class="admin-header">
+            <h1>⚙️ FedEx<span>-livetracking.number</span> Admin</h1>
+            <div class="header-right">
+                <span class="user-badge" id="userBadge">👤 ...</span>
+                <a href="index.html" class="back-link">← Tracking</a>
+                <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="stats" id="statsContainer">
+            <div class="stat-card"><div class="num" id="totalPkgs">0</div><div class="label">Total Packages</div></div>
+            <div class="stat-card"><div class="num" id="inTransitCount">0</div><div class="label">In Transit / Out</div></div>
+            <div class="stat-card"><div class="num" id="deliveredCount">0</div><div class="label">Delivered</div></div>
+            <div class="stat-card"><div class="num" id="exceptionCount">0</div><div class="label">Exceptions</div></div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tracking #</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    <tr class="loading-row"><td colspan="7">Loading packages...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gen-section">
+            <label>🔑 Generate New:</label>
+            <input type="text" id="newTracking" placeholder="771234567896" value="771234567896" />
+            <input type="text" id="newCustomer" placeholder="Customer name *" />
+            <input type="text" id="newOrigin" placeholder="Origin" />
+            <input type="text" id="newDest" placeholder="Destination" />
+            <button class="btn-gen" id="genBtn">➕ Generate</button>
+        </div>
+
+        <div class="expanded-fields">
+            <label>Sender:</label>
+            <input type="text" id="newSender" placeholder="Sender name" />
+            <input type="text" id="newSenderEmail" placeholder="Sender email" />
+            <input type="text" id="newSenderPhone" placeholder="Sender phone" />
+            <label>Receiver:</label>
+            <input type="text" id="newReceiver" placeholder="Receiver name" />
+            <input type="text" id="newReceiverEmail" placeholder="Receiver email" />
+            <input type="text" id="newReceiverPhone" placeholder="Receiver phone" />
+            <input type="text" id="newWeight" placeholder="Weight (kg)" value="10" style="max-width:80px;" />
+        </div>
+
+        <div style="margin-top:15px; color:#aaa; font-size:12px; text-align:center;">
+            💾 Changes save to the live database instantly — visible to every visitor, on any device.
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import {
+            getAuth, onAuthStateChanged, signOut
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import {
+            getFirestore, collection, doc, getDocs, setDoc, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+        // ========== FIREBASE SETUP ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyAueqbCcGN_LKDTd6YnPkPcWSIufFqsqwM",
+            authDomain: "fedex-4bdba.firebaseapp.com",
+            projectId: "fedex-4bdba",
+            storageBucket: "fedex-4bdba.firebasestorage.app",
+            messagingSenderId: "770647474446",
+            appId: "1:770647474446:web:b824fa3219cc2be3ab575f",
+            measurementId: "G-HG9VYPL989"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        // Separate collection name so this never touches your other FedEx site's data
+        const packagesRef = collection(db, 'livePackages');
+
+        // Default sample data — used ONLY the very first time (empty database)
+        const defaultPackages = {
+            '771234567890': { customer: 'John Smith', status: 'In Transit', origin: 'New York, NY', dest: 'Los Angeles, CA', progress: 45, time: new Date().toLocaleString(), desc: 'Package arrived at Memphis hub', senderName: 'James Anderson', senderAddress: 'Kabul, Afghanistan', senderEmail: 'jamesanderson@gmail.com', senderPhone: '+1 (609) 726-8201', receiverName: 'Anthony Jones', receiverAddress: 'Dallas, TX', receiverEmail: 'anthonyjones@gmail.com', receiverPhone: '+1 (712) 583-8202', weight: '10', quantity: '1', carrier: 'FedEx', serviceType: 'Courier', packageType: 'Courier', currentLocation: 'Memphis Hub' },
+            '771234567891': { customer: 'Sarah Johnson', status: 'Out for Delivery', origin: 'Chicago, IL', dest: 'Miami, FL', progress: 75, time: new Date().toLocaleString(), desc: 'On vehicle for delivery today', senderName: 'Robert Wilson', senderAddress: 'Chicago, IL', senderEmail: 'robertw@gmail.com', senderPhone: '+1 (312) 555-0199', receiverName: 'Maria Garcia', receiverAddress: 'Miami, FL', receiverEmail: 'mariag@email.com', receiverPhone: '+1 (305) 555-0188', weight: '5', quantity: '2', carrier: 'FedEx', serviceType: 'Express', packageType: 'Box', currentLocation: 'Miami Distribution Center' },
+            '771234567892': { customer: 'Michael Brown', status: 'Delivered', origin: 'Dallas, TX', dest: 'Seattle, WA', progress: 100, time: new Date().toLocaleString(), desc: 'Delivered to recipient', senderName: 'David Kim', senderAddress: 'Dallas, TX', senderEmail: 'davidk@company.com', senderPhone: '+1 (214) 555-0177', receiverName: 'Lisa Wong', receiverAddress: 'Seattle, WA', receiverEmail: 'lisaw@email.com', receiverPhone: '+1 (206) 555-0166', weight: '15', quantity: '1', carrier: 'FedEx', serviceType: 'Ground', packageType: 'Pallet', currentLocation: 'Delivered' },
+            '771234567893': { customer: 'Emily Davis', status: 'Pending', origin: 'Boston, MA', dest: 'Denver, CO', progress: 5, time: new Date().toLocaleString(), desc: 'Label created, awaiting pickup', senderName: 'Thomas Moore', senderAddress: 'Boston, MA', senderEmail: 'thomasm@gmail.com', senderPhone: '+1 (617) 555-0155', receiverName: 'Amanda Lee', receiverAddress: 'Denver, CO', receiverEmail: 'amandal@email.com', receiverPhone: '+1 (303) 555-0144', weight: '8', quantity: '3', carrier: 'FedEx', serviceType: 'Economy', packageType: 'Envelope', currentLocation: 'Boston Facility' },
+            '771234567894': { customer: 'Robert Wilson', status: 'Exception', origin: 'Atlanta, GA', dest: 'Phoenix, AZ', progress: 30, time: new Date().toLocaleString(), desc: 'Weather delay - rescheduled for tomorrow', senderName: 'Patricia Taylor', senderAddress: 'Atlanta, GA', senderEmail: 'patriciat@company.com', senderPhone: '+1 (404) 555-0133', receiverName: 'Christopher Park', receiverAddress: 'Phoenix, AZ', receiverEmail: 'chrisp@email.com', receiverPhone: '+1 (602) 555-0122', weight: '12', quantity: '1', carrier: 'FedEx', serviceType: 'Priority', packageType: 'Box', currentLocation: 'Atlanta Hub' }
+        };
+
+        let packages = {};
+
+        // ========== AUTH GATE ==========
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            document.getElementById('userBadge').textContent = '👤 ' + user.email;
+            loadPackagesFromFirestore();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => { window.location.href = 'admin-login.html'; });
+        });
+
+        // ========== LOAD FROM FIRESTORE (seeds defaults once if empty) ==========
+        async function loadPackagesFromFirestore() {
+            const snap = await getDocs(packagesRef);
+
+            if (snap.empty) {
+                for (const [id, data] of Object.entries(defaultPackages)) {
+                    await setDoc(doc(db, 'livePackages', id), data);
+                }
+                packages = { ...defaultPackages };
+            } else {
+                packages = {};
+                snap.forEach(d => { packages[d.id] = d.data(); });
+            }
+
+            renderAdmin();
+        }
+
+        // ========== RENDER TABLE ==========
+        function renderAdmin() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+
+            let total = 0, transit = 0, delivered = 0, exception = 0;
+
+            for (const [tracking, data] of Object.entries(packages)) {
+                total++;
+                if (data.status === 'In Transit' || data.status === 'Out for Delivery') transit++;
+                if (data.status === 'Delivered') delivered++;
+                if (data.status === 'Exception') exception++;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong style="color:#003399;">${tracking}</strong></td>
+                    <td><input type="text" class="customer-input" data-tracking="${tracking}" value="${data.customer || ''}" placeholder="Customer" /></td>
+                    <td>
+                        <select class="status-select" data-tracking="${tracking}">
+                            ${['In Transit','Out for Delivery','Delivered','Pending','Exception'].map(s => 
+                                `<option value="${s}" ${data.status === s ? 'selected' : ''}>${s}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td><input type="text" class="origin-input" data-tracking="${tracking}" value="${data.origin || ''}" placeholder="Origin" /></td>
+                    <td><input type="text" class="dest-input" data-tracking="${tracking}" value="${data.dest || ''}" placeholder="Destination" /></td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="range" min="0" max="100" value="${data.progress || 0}" class="progress-range" data-tracking="${tracking}" style="flex:1; max-width:100px;" />
+                            <span style="font-size:13px; color:#666; min-width:35px;" class="progress-label" data-tracking="${tracking}">${data.progress || 0}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn-save" onclick="updatePackage('${tracking}')">💾 Save</button>
+                        <button class="btn-delete" onclick="deletePackage('${tracking}')">✖</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            document.querySelectorAll('.progress-range').forEach(range => {
+                range.addEventListener('input', function () {
+                    const tracking = this.dataset.tracking;
+                    document.querySelector(`.progress-label[data-tracking="${tracking}"]`).textContent = this.value + '%';
+                });
+            });
+
+            document.getElementById('totalPkgs').textContent = total;
+            document.getElementById('inTransitCount').textContent = transit;
+            document.getElementById('deliveredCount').textContent = delivered;
+            document.getElementById('exceptionCount').textContent = exception;
+        }
+
+        // ========== UPDATE PACKAGE ==========
+        window.updatePackage = async function (tracking) {
+            const customerInput = document.querySelector(`.customer-input[data-tracking="${tracking}"]`);
+            const statusSelect = document.querySelector(`.status-select[data-tracking="${tracking}"]`);
+            const originInput = document.querySelector(`.origin-input[data-tracking="${tracking}"]`);
+            const destInput = document.querySelector(`.dest-input[data-tracking="${tracking}"]`);
+            const progressRange = document.querySelector(`.progress-range[data-tracking="${tracking}"]`);
+
+            const descMap = {
+                'In Transit': 'Package is moving through network',
+                'Out for Delivery': 'On vehicle for delivery today',
+                'Delivered': 'Delivered to recipient',
+                'Pending': 'Label created, awaiting pickup',
+                'Exception': 'Delivery exception - see details'
+            };
+
+            // Merge with existing data so sender/receiver/weight etc. aren't lost
+            const merged = {
+                ...packages[tracking],
+                customer: customerInput.value.trim() || 'Not assigned',
+                status: statusSelect.value,
+                origin: originInput.value.trim() || 'Unknown',
+                dest: destInput.value.trim() || 'Unknown',
+                progress: parseInt(progressRange.value),
+                time: new Date().toLocaleString(),
+                desc: descMap[statusSelect.value] || 'Status updated'
+            };
+
+            try {
+                await setDoc(doc(db, 'livePackages', tracking), merged);
+                packages[tracking] = merged;
+                showToast(`✅ ${tracking} updated successfully!`);
+                renderAdmin();
+            } catch (e) {
+                console.error(e);
+                showToast('❌ Failed to save. Try again.');
+            }
+        };
+
+        // ========== DELETE PACKAGE ==========
+        window.deletePackage = async function (tracking) {
+            if (!confirm(`Delete ${tracking} permanently?`)) return;
+            try {
+                await deleteDoc(doc(db, 'livePackages', tracking));
+                delete packages[tracking];
+                showToast(`🗑️ ${tracking} deleted.`);
+                renderAdmin();
+            } catch (e) {
+                console.error(e);
+                showToast('❌ Failed to delete. Try again.');
+            }
+        };
+
+        // ========== GENERATE PACKAGE ==========
+        document.getElementById('genBtn').addEventListener('click', async () => {
+            const newId = document.getElementById('newTracking').value.trim();
+            const newCustomer = document.getElementById('newCustomer').value.trim();
+            const newOrigin = document.getElementById('newOrigin').value.trim();
+            const newDest = document.getElementById('newDest').value.trim();
+            const newSender = document.getElementById('newSender').value.trim();
+            const newSenderEmail = document.getElementById('newSenderEmail').value.trim();
+            const newSenderPhone = document.getElementById('newSenderPhone').value.trim();
+            const newReceiver = document.getElementById('newReceiver').value.trim();
+            const newReceiverEmail = document.getElementById('newReceiverEmail').value.trim();
+            const newReceiverPhone = document.getElementById('newReceiverPhone').value.trim();
+            const newWeight = document.getElementById('newWeight').value.trim() || '10';
+            const genBtn = document.getElementById('genBtn');
+
+            if (!newId) { showToast('❌ Please enter a tracking number.'); return; }
+            if (packages[newId]) { showToast('❌ This tracking number already exists!'); return; }
+            if (!newCustomer) { showToast('❌ Please enter a customer name.'); return; }
+
+            const newData = {
+                customer: newCustomer,
+                status: 'Pending',
+                origin: newOrigin || 'Unknown',
+                dest: newDest || 'Unknown',
+                progress: 0,
+                time: new Date().toLocaleString(),
+                desc: 'New package created',
+                senderName: newSender || 'Not specified',
+                senderAddress: newOrigin || 'Unknown',
+                senderEmail: newSenderEmail || 'Not specified',
+                senderPhone: newSenderPhone || 'Not specified',
+                receiverName: newReceiver || 'Not specified',
+                receiverAddress: newDest || 'Unknown',
+                receiverEmail: newReceiverEmail || 'Not specified',
+                receiverPhone: newReceiverPhone || 'Not specified',
+                weight: newWeight,
+                quantity: '1',
+                carrier: 'FedEx',
+                serviceType: 'Courier',
+                packageType: 'Courier',
+                currentLocation: newOrigin || 'In transit'
+            };
+
+            genBtn.disabled = true;
+            try {
+                await setDoc(doc(db, 'livePackages', newId), newData);
+                packages[newId] = newData;
+
+                document.getElementById('newTracking').value = '';
+                document.getElementById('newCustomer').value = '';
+                document.getElementById('newOrigin').value = '';
+                document.getElementById('newDest').value = '';
+                document.getElementById('newSender').value = '';
+                document.getElementById('newSenderEmail').value = '';
+                document.getElementById('newSenderPhone').value = '';
+                document.getElementById('newReceiver').value = '';
+                document.getElementById('newReceiverEmail').value = '';
+                document.getElementById('newReceiverPhone').value = '';
+
+                showToast(`🎉 ${newId} generated for ${newCustomer}!`);
+                renderAdmin();
+            } catch (e) {
+                console.error(e);
+                showToast('❌ Failed to create package. Try again.');
+            } finally {
+                genBtn.disabled = false;
+            }
+        });
+
+        // ========== TOAST ==========
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3500);
+        }
+    </script>
+</body>
+</html>
